@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: database
+  
+  
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: database-data
+  name: database-data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+      
+      
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: database
+  name: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+      - args:
+        - mysqld
+        - --character-set-server=utf8
+        - --collation-server=utf8_general_ci
+        - --character-set-filesystem=utf8
+        env:
+        - name: MYSQL_DATABASE
+          value: lportal
+        - name: MYSQL_PASSWORD
+          value: roto2
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_USER
+          value: roto2
+        image: mysql:5.7
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "0.5"
+        ports:
+        - containerPort: 3306
+        name: database
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: database-data
+      restartPolicy: Always
+      volumes:
+      - name: database-data
+        persistentVolumeClaim:
+          claimName: database-data
+
