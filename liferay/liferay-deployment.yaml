@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: liferay
+  name: liferay--cluster
+spec:
+  ports:
+  - name: "8080"
+    port: 8080
+  selector:
+    app: liferay
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: liferay-data
+  name: liferay-data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: liferay-config
+  name: liferay-config
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: liferay
+  name: liferay
+spec:
+  replicas: 1 #Inicialmente crearemos 1 pod de este deployment
+  selector:
+    matchLabels:
+      app: liferay
+  strategy:
+    type: RollingUpdate #Usaremos rollingupdate con el fin de disponer de zero-downtime
+  template:
+    metadata:
+      labels:
+        app: liferay
+    spec:
+      containers:
+      - env: 
+        - name: LIFERAY_JAVA_OPTS 
+          value: -Xms2g -Xmx2g
+        - name: LIFERAY_MODULE_PERIOD_FRAMEWORK_PERIOD_PROPERTIES_PERIOD_OSGI_PERIOD_CONSOLE
+          value: 0.0.0.0:11311
+        - name: LIFERAY_WEB_PERIOD_SERVER_PERIOD_DISPLAY_PERIOD_NODE #La usaremos con el fin de probar el cluster
+          value: "true"
+        - name: LIFERAY_REDIRECT_PERIOD_URL_PERIOD_SECURITY_PERIOD_MODE #La usaremos para permitir los redirect en el cluster
+          value: "domain"
+        image: liferay/portal:7.3.1-ga2
+        resources:
+          requests: #Recursos que se aprovisionan al memomento de arrancar el pod
+            memory: "2048Mi"
+            cpu: "2"
+          limits: #Limite de recursos que podrá disponer el pod
+            memory: "4098Mi"
+            cpu: "3"
+        name: liferay 
+        ports: #puertos abiertos en el contenedor
+        - containerPort: 11311
+        - containerPort: 8080
+        readinessProbe: # permite controlar si el pod esta con capacidad de dar servicio, si no tiene capacidad k8s detiene el trafico a el
+          httpGet:
+            path: "/c/portal/layout"
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 15
+          failureThreshold: 3
+          successThreshold: 3
+        livenessProbe: # Permite controlar cuando el pod se considera vivo y se mete en en balanceador. Si falla, reinicia el pod
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 20
+          failureThreshold: 3
+          successThreshold: 1
+        volumeMounts: # directorios donde se van a montar los volumenes
+        - mountPath: /opt/liferay/data
+          name: liferay-data
+        - mountPath: /mnt/liferay
+          name: liferay-config
+      restartPolicy: Always #politica de reinicio ante errores en el contenedor
+      volumes: # descripcion de los volumenes y pvc
+      - name: liferay-data
+        persistentVolumeClaim:
+          claimName: liferay-data
+      - name: liferay-config
+        persistentVolumeClaim:
+          claimName: liferay-config
