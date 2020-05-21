@@ -21,5 +21,5 @@ echo "Setting Nginx Ingress"
 ./scripts/init-ingress.sh
 
 echo -e "\n##########################"
-echo -e "\nWait while Liferay database scheme is created..."
+echo -e "\nWait while Liferay database schema is created..."
 ./scripts/check-liferay-status.sh
