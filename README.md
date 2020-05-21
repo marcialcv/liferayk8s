@@ -26,7 +26,7 @@ Run the `build-and-deploy.sh` script. Note that this script is a shortcut for ru
     
     5. Notification when Liferay service is UP & Running scripts/check-liferay-status.sh
     
-Run the `scripts/tear-down.sh` script when you want to remove namespace with all resources created.
+Run the `tear-down.sh` script when you want to remove namespace with all resources created.
 
  
 
