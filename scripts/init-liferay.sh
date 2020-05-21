@@ -12,13 +12,15 @@ function initLiferay() {
   
   sleep 5
   
-  podName=$(kubectl get pods -l app=liferay -n=${NAMESPACE} --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+  podName=$(getLiferayPod)
   
   echo "Liferay Pod name ${podName} running....."
   
   sleep 5
   
   configureLiferay
+  
+  echo "New configured Liferay pod is being started: $(getLiferayPod)"
   
 }
 
@@ -29,6 +31,10 @@ function configureLiferay(){
   
   kubectl delete pods ${podName} -n=${NAMESPACE} 
 
+}
+
+function getLiferayPod(){
+  echo $(kubectl get pods -l app=liferay -n=${NAMESPACE} --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
 }
 
 initLiferay
