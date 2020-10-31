@@ -21,7 +21,7 @@ Run the `build-and-deploy.sh` script. Note that this script is a shortcut for ru
     
     2. Run the Elastichsearch deployment and service scripts/init-es.sh
     
-    3. Run the Liferay deployment (this deployment contains 2 containers: Nginx and Liferay), service and configuration scripts/init-liferay.sh
+    3. Run the Liferay deployment (this deployment contains 1 containers with Liferay), service and configuration scripts/init-liferay.sh
     
     4. Configure the Nginx Ingress scripts/init-ingress.sh
     
