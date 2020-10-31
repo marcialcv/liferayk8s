@@ -13,6 +13,7 @@ Before run script, you have to get started minikube and enabled addon ingress. I
 
     - minikube start
     - minikube addons enable ingress
+    - eval $(minikube docker-env)
  
 Run the `build-and-deploy.sh` script. Note that this script is a shortcut for running all of the sub-steps below.
 
