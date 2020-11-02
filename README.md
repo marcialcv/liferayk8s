@@ -1,4 +1,4 @@
-# How to Install Liferay 7.3 CE to a Kubernetes Cluster
+# How to Install Liferay 7.3 CE to a Kubernetes Cluster with Webserver and Liferay in the same pod
 
 ### Required Software and Prerequisites
 
