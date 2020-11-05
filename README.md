@@ -21,11 +21,13 @@ Run the `build-and-deploy.sh` script. Note that this script is a shortcut for ru
     
     2. Run the Elastichsearch deployment and service scripts/init-es.sh
     
-    3. Run the Liferay deployment (this deployment contains 1 container with Liferay), service and configuration scripts/init-liferay.sh
+    3. Run the Nginx deployment and service script/init-webserver.sh
     
-    4. Configure the Nginx Ingress scripts/init-ingress.sh
+    4. Run the Liferay deployment (this deployment contains 1 container with Liferay), service and configuration scripts/init-liferay.sh
     
-    5. Notification when Liferay service is UP & Running scripts/check-liferay-status.sh
+    5. Configure the Nginx Ingress scripts/init-ingress.sh
+    
+    6. Notification when Liferay service is UP & Running scripts/check-liferay-status.sh
     
 Run the `tear-down.sh` script when you want to remove namespace with all resources created.
 
