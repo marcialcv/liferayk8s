@@ -1,0 +1,53 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver
+spec:
+  selector:
+    app: webserver
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+    
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webserver
+  name: webserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webserver
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: webserver
+    spec:
+      containers:
+      - name: webserver
+        env:
+        - name: LCP_PROJECT_UID 
+          value: liferay-prod
+        - name: LCP_PROJECT_ENVIRONMENT
+          value: prd
+        image: webserver-nginx-lcp
+        imagePullPolicy: Never
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "0.5"
+        name: webserver
+        ports:
+        - containerPort: 80
+        - containerPort: 81
+      restartPolicy: Always
+
+    
